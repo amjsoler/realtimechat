@@ -1,27 +1,30 @@
 import { WebSocketServer } from 'ws';
+import  ChatController  from './controllers/ChatController.js';
 
-const wss = new WebSocketServer({ port: 8080 }, () => {
-    console.log('Server started on localhost:8080');
+//TODO: Refactor port number into env file
+const port = 8080
+
+const chatController = new ChatController()
+
+//Create a new WebSocketServer
+const wss = new WebSocketServer({ port: port }, () => {
+    console.log(`WebSocket server started on localhost:${port}`)
 })
 
-let chatHistory = []
-let lastMessage = 0
-
+//Incoming connection handler
 wss.on('connection', function connection(ws) {
-    const isBinary = false;
-
     console.log("A User has been connected")
 
+    //Log websocket errors
     ws.on('error', console.error);
 
-    ws.on('message', function message(data, isBinary) {
-
-        //TODO: Aquí habría que comprobar el tipo del mensaje para discernir si es un mensaje completo o una única letra
-
-        const dataParsed = JSON.parse(data)
-
-        chatHistory.push(dataParsed)
-        console.log(chatHistory)
+    //Incoming message handler
+    ws.on('message', function message(data) {
+        try {
+            chatController.saveMessage(JSON.parse(data))
+        }catch(e){
+            console.log("Error parsing JSON data")
+        }
     });
 
     ws.on("close", function disconnect() {
