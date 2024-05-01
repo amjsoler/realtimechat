@@ -1,9 +1,23 @@
 import './App.css'
+import {Component, useState} from "react";
 
-function App() {
-  return (
-      <h1 className={"font-bold text-4xl text-blue-700"}>Chat</h1>
-  )
+class App extends Component {
+
+  connectToChat() {
+    console.log("Connecting to chat...")
+  }
+
+  componentDidMount() {
+    const socket = new WebSocket("ws://localhost:8080")
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>Chat App</h1>
+      </div>
+    )
+  }
 }
 
 export default App
