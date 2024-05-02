@@ -92,7 +92,7 @@ function App() {
           <LoginUser handleLoginUser={handleLoginUser}/> :
           <div className={"flex flex-col h-full space-y-4"}>
               <div id={"msg-board"}
-                   className={"grow border-2 border-stone-900/20 rounded-lg p-2 space-y-2 overflow-scroll"}>
+                   className={"grow border-2 border-stone-900/20 rounded-lg p-2 space-y-2 overflow-x-hidden overflow-scroll dark:bg-gray-800 dark:text-white"}>
                   {
                       (messages.length === 0) ?
                           noMessageBlock :

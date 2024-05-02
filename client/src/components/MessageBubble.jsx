@@ -4,14 +4,16 @@ export function MessageBubble({message, myOwnMessage}) {
         let formatedDate = "";
 
         const date = new Date(timestamp);
-        formatedDate += date.getFullYear().toString() + "/"
+        formatedDate += date.getDate() + "/"
         formatedDate += date.getMonth() + "/"
-        formatedDate += date.getDate() + " "
+        formatedDate += date.getFullYear().toString() + " "
         formatedDate += date.getHours() + ":"
         formatedDate += date.getMinutes()
 
         return formatedDate
     }
+
+    const bubbleClasses = "flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-xl dark:bg-gray-700" + (myOwnMessage ? " rounded-tr-none" : " rounded-tl-none")
     return (
         <div key={message.id} className={
             myOwnMessage ?
@@ -21,7 +23,9 @@ export function MessageBubble({message, myOwnMessage}) {
         >
             <div
                 className={
-                "flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-xl dark:bg-gray-700"}>
+                    bubbleClasses
+                }
+            >
                 <div className="flex items-center space-x-2 rtl:space-x-reverse">
                                     <span className="text-sm font-semibold text-gray-900 dark:text-white">
                                         {message.user}
