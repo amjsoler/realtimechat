@@ -11,7 +11,7 @@ export default class ChatController {
 
         //Consultar el último ID insertado
         data.id = parseInt(this._service.getLastInsertedID()) + 1
-console.log(data.id)
+
         //Actual timestamp
         data.timestamp = new Date().getTime()
 
@@ -21,5 +21,11 @@ console.log(data.id)
       return true
   }
 
+    async getMessages() {
+        return this._service.getMessagesFromStorage()
+    }
 
+    async getLastMessage() {
+        return this._service.getLastMessageFromStorage()
+    }
 }

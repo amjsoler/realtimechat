@@ -14,3 +14,11 @@ export function getLastInsertedID() {
     if(chatRepository.length === 0) return 0
     else return chatRepository[chatRepository.length - 1].id
 }
+
+export function getMessagesFromStorage() {
+    return chatRepository
+}
+
+export function getLastMessageFromStorage() {
+    return chatRepository[chatRepository.length - 1]
+}

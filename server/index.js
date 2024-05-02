@@ -14,8 +14,10 @@ const wss = new WebSocketServer({ port: port }, () => {
 
 //Incoming connection handler
 wss.on('connection', function connection(ws) {
-    ws.send("A User has been connected")
-    console.log("A User has been connected")
+    //Send the chat history to the connected user
+    chatController.getMessages().then((messages) => {
+        ws.send(JSON.stringify(messages))
+    })
 
     //Log websocket errors
     ws.on('error', console.error);
@@ -23,9 +25,18 @@ wss.on('connection', function connection(ws) {
     //Incoming message handler
     ws.on('message', function message(data) {
         try {
-            chatController.saveMessage(JSON.parse(data))
+            const resultSave = chatController.saveMessage(JSON.parse(data))
 
-            console.log(chatRepository)
+            if(resultSave){
+                //Send message to all connected users
+                wss.clients.forEach(function each(client) {
+                    chatController.getLastMessage().then((lastMessage) => {
+                        client.send(JSON.stringify(lastMessage))
+                    })
+                });
+            }else{
+                console.log("Error saving message")
+            }
         }catch(e){
             console.log("Error parsing JSON data")
         }
