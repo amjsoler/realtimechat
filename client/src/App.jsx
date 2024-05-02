@@ -14,21 +14,24 @@ function App() {
         sendJsonMessage,
         lastJsonMessage,
     } = useWebSocket("ws://localhost:8080", {
-        onOpen: () => {},
+        onOpen: () => {
+        },
         //Will attempt to reconnect on all close events, such as server shutting down
         shouldReconnect: () => true,
     });
 
+    //Scroll to bottom when new message is added
     useEffect(() => {
         scrollMsgBoardToBottom()
     }, [messages]);
 
+
     function handlerTypingPartialMessage(message) {
         //Search in message array if message id exists
-        if(messages.filter(item => item.id === message.id).length === 0) {
+        if (messages.filter(item => item.id === message.id).length === 0) {
             //If not exists, add the message
             setMessages([...messages, message])
-        }else{
+        } else {
             //If exists, update the message
             const messageIndex = messages.findIndex(item => item.id === message.id)
 
@@ -40,8 +43,9 @@ function App() {
             setMessages(newMessages)
         }
     }
+
     useEffect(() => {
-        if(lastJsonMessage === null) return
+        if (lastJsonMessage === null) return
 
         //Check the type of the msg
         switch (lastJsonMessage.msgType) {
@@ -50,7 +54,7 @@ function App() {
                 break
             case "lastMessage":
                 //if the user has typing message, remove it
-                if(messages.filter(item => item.user === lastJsonMessage.data.user && item.msgType === 'typing')){
+                if (messages.filter(item => item.user === lastJsonMessage.data.user && item.msgType === 'typing')) {
                     const newMessages = messages.filter(item => item.user !== lastJsonMessage.data.user || item.msgType !== 'typing')
                     setMessages(newMessages)
                 }
@@ -64,7 +68,7 @@ function App() {
     }, [lastJsonMessage])
 
     function scrollMsgBoardToBottom() {
-        if(user === null) return
+        if (user === null) return
         const msgBoard = document.querySelector("#msg-board")
         msgBoard.scrollTo(0, msgBoard.scrollHeight)
     }
@@ -74,42 +78,44 @@ function App() {
     }
 
     function handleSendMessage(message) {
-        sendJsonMessage({ user: user, msgType: 'message', message: message })
+        sendJsonMessage({user: user, msgType: 'message', message: message})
     }
 
     function handleTypingPartialMessage(message) {
-        sendJsonMessage({ user: user, msgType: 'typing', message: message})
+        sendJsonMessage({user: user, msgType: 'typing', message: message})
     }
 
+    //Constant for no message block
     const noMessageBlock =
         <div className={"w-full pt-12"}>
-            <p className={"text-center font-semibold text-2xl"}>Still no messages</p>
-            <p className={"text-center text-xl"}>Send the first message with the input below </p>
+            <p className={"text-center font-semibold text-2xl"}>There are no messages yet</p>
+            <p className={"text-center text-xl"}>Be the first to write with the text field below</p>
         </div>
 
-  return (
-      <>
-        <ThemeToggle/>
-          {
-              (user === null) ?
-                  <LoginUser handleLoginUser={handleLoginUser}/> :
-                  <div className={"flex flex-col h-full space-y-4"}>
-                      <div id={"msg-board"}
-                           className={"grow border-2 border-stone-900/20 rounded-lg p-2 space-y-2 overflow-x-hidden overflow-scroll bg-white dark:bg-gray-800 dark:text-white transition duration-300"}>
-                          {
-                              (messages.length === 0) ?
-                                  noMessageBlock :
-                                  <MessageBoard messages={messages} user={user}/>
-                          }
-                      </div>
+    return (
+        <>
+            <ThemeToggle/>
+            {
+                (user === null) ?
+                    <LoginUser handleLoginUser={handleLoginUser}/> :
+                    <div className={"flex flex-col h-full space-y-4"}>
+                        <div id={"msg-board"}
+                             className={"grow border-2 border-stone-900/20 rounded-lg p-2 space-y-2 overflow-x-hidden overflow-scroll bg-white dark:bg-gray-800 dark:text-white transition duration-300"}>
+                            {
+                                (messages.length === 0) ?
+                                    noMessageBlock :
+                                    <MessageBoard messages={messages} user={user}/>
+                            }
+                        </div>
 
-                      <div>
-                          <SendMessage handleSendMessage={handleSendMessage} handleTypingMessage={handleTypingPartialMessage}/>
-                      </div>
-                  </div>
-          }
-      </>
-  )
+                        <div>
+                            <SendMessage handleSendMessage={handleSendMessage}
+                                         handleTypingMessage={handleTypingPartialMessage}/>
+                        </div>
+                    </div>
+            }
+        </>
+    )
 }
 
 export default App
