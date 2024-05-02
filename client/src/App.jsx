@@ -29,8 +29,14 @@ function App() {
                 break
         }
 
-    }, [lastJsonMessage])
+        scrollMsgBoardToBottom()
 
+    }, [lastJsonMessage, messages])
+
+    function scrollMsgBoardToBottom() {
+        const msgBoard = document.querySelector("#msg-board")
+        msgBoard.scrollTo(0, msgBoard.scrollHeight)
+    }
     function handleSendMessage(event) {
         event.preventDefault()
 
@@ -44,7 +50,7 @@ function App() {
         </div>
   return (
       <div className={"flex flex-col h-full space-y-4"}>
-        <div className={"grow border-2 border-stone-900/20 rounded-lg p-2 space-y-2"}>
+        <div id={"msg-board"} className={"grow border-2 border-stone-900/20 rounded-lg p-2 space-y-2 overflow-scroll"}>
             {
                 (messages.length === 0) ?
                     sinMessageBlock :
