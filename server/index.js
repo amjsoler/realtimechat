@@ -1,5 +1,6 @@
 import { WebSocketServer } from 'ws';
 import  ChatController  from './controllers/ChatController.js';
+import {chatRepository} from "./repositories/ChatRepository.js";
 
 //TODO: Refactor port number into env file
 const port = 8080
@@ -13,6 +14,7 @@ const wss = new WebSocketServer({ port: port }, () => {
 
 //Incoming connection handler
 wss.on('connection', function connection(ws) {
+    ws.send("A User has been connected")
     console.log("A User has been connected")
 
     //Log websocket errors
@@ -22,6 +24,8 @@ wss.on('connection', function connection(ws) {
     ws.on('message', function message(data) {
         try {
             chatController.saveMessage(JSON.parse(data))
+
+            console.log(chatRepository)
         }catch(e){
             console.log("Error parsing JSON data")
         }

@@ -1,12 +1,16 @@
-import fs from 'fs'
+export const chatRepository = []
 
-export function saveMessageToStorage() {
+export function saveMessageToStorage(id, user, message, timestamp) {
 
-    fs.readFileSync("server/database/chatHistory.json", "utf8", (err, data) => {
-        if (err) {
-            console.log("Error reading file")
-            return
-        }
-        console.log(data)
+    chatRepository.push({
+        id: id,
+        user: user,
+        message: message,
+        timestamp: timestamp
     })
+}
+
+export function getLastInsertedID() {
+    if(chatRepository.length === 0) return 0
+    else return chatRepository[chatRepository.length - 1].id
 }

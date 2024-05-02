@@ -1,4 +1,4 @@
-import {saveMessageToStorage} from "../repositories/ChatRepository.js";
+import {getLastInsertedID, saveMessageToStorage} from "../repositories/ChatRepository.js";
 
 export default class ChatService {
     getMessagesFromStorage() {
@@ -6,6 +6,10 @@ export default class ChatService {
     }
 
     saveMessageToStorage(id, user, message, timestamp) {
-        saveMessageToStorage()
+        saveMessageToStorage(id, user, message, timestamp)
+    }
+
+    getLastInsertedID() {
+        return getLastInsertedID()
     }
 }

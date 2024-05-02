@@ -6,12 +6,19 @@ export default class ChatController {
         //Validate incoming data
         if (!data || !data.msgType || !data.message || !data.user) {
             console.log("Invalid data")
-            return
+            return false
         }
 
-      console.log("ChatController.saveMessage: ", data)
+        //Consultar el último ID insertado
+        data.id = parseInt(this._service.getLastInsertedID()) + 1
+console.log(data.id)
+        //Actual timestamp
+        data.timestamp = new Date().getTime()
 
+        //Save message to storage
         this._service.saveMessageToStorage(data.id, data.user, data.message, data.timestamp)
+
+      return true
   }
 
 
