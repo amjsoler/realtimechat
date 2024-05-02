@@ -1,9 +1,7 @@
 import { WebSocketServer } from 'ws';
 import  ChatController  from './controllers/ChatController.js';
-import {chatRepository} from "./repositories/ChatRepository.js";
 
-//TODO: Refactor port number into env file
-const port = 8080
+const port = process.env.WS_SERVER_PORT ?? 8080
 
 const chatController = new ChatController()
 
@@ -14,10 +12,17 @@ const wss = new WebSocketServer({ port: port }, () => {
 
 //Incoming connection handler
 wss.on('connection', function connection(ws) {
-    //Send the chat history to the connected user
-    chatController.getMessages().then((messages) => {
-        ws.send(JSON.stringify(messages))
-    })
+    //restore all messages on connection
+    if(process.env.RESTORE_CHAT_HISTORY_ON_CONNECT){
+        chatController.getMessages().then((result) => {
+            if(result.code === 0){
+                ws.send(JSON.stringify(result.data))
+            }
+            else{
+                console.log(result.data)
+            }
+        })
+    }
 
     //Log websocket errors
     ws.on('error', console.error);
@@ -25,26 +30,33 @@ wss.on('connection', function connection(ws) {
     //Incoming message handler
     ws.on('message', function message(data) {
         try {
-            const resultSave = chatController.saveMessage(JSON.parse(data))
-
-            if(resultSave){
-                //Send message to all connected users
-                wss.clients.forEach(function each(client) {
-                    chatController.getLastMessage().then((lastMessage) => {
-                        client.send(JSON.stringify(lastMessage))
-                    })
-                });
-            }else{
-                console.log("Error saving message")
-            }
+            chatController.saveMessage(JSON.parse(data)).then((result) => {
+                if(result.code === 0){
+                    //Send message to all connected users
+                    wss.clients.forEach(function each(client) {
+                        chatController.getLastMessage().then((getLastMessageResult) => {
+                            if(getLastMessageResult.code === 0){
+                                client.send(JSON.stringify(getLastMessageResult.data))
+                            }
+                            else{
+                                console.log(getLastMessageResult.data)
+                            }
+                        })
+                    });
+                }else{
+                    console.log(result.data)
+                }
+            })
         }catch(e){
             console.log("Error parsing JSON data")
         }
     });
 
     ws.on("close", function disconnect() {
-        //TODO: Aquí se podría mandar un mensaje a todos los usuarios para informar de que alguien se ha desconectado
-        console.log("A User has been disconnected")
+        //Send message to all connected users
+        wss.clients.forEach(function each(client) {
+            client.send("A user has disconnected")
+        });
     })
 });
 

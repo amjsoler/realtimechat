@@ -1,9 +1,8 @@
 export const chatRepository = []
 
-export function saveMessageToStorage(id, user, message, timestamp) {
-
+export function saveMessageToStorage(user, message, timestamp) {
     chatRepository.push({
-        id: id,
+        id: getLastInsertedID()+1,
         user: user,
         message: message,
         timestamp: timestamp
@@ -20,5 +19,6 @@ export function getMessagesFromStorage() {
 }
 
 export function getLastMessageFromStorage() {
-    return chatRepository[chatRepository.length - 1]
+    if(chatRepository.length === 0) return null
+    else return chatRepository[chatRepository.length - 1]
 }

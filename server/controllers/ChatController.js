@@ -2,30 +2,45 @@ import ChatService from "../services/ChatService.js";
 
 export default class ChatController {
     _service = new ChatService();
+
   async saveMessage(data) {
-        //Validate incoming data
-        if (!data || !data.msgType || !data.message || !data.user) {
-            console.log("Invalid data")
-            return false
+        try{
+            //Validate incoming data
+            if (!data || !data.msgType || !data.message || !data.user) {
+                console.log("Invalid data")
+                return false
+            }
+
+            //Actual timestamp
+            data.timestamp = new Date().getTime()
+
+            //Save message to storage
+            this._service.saveMessageToStorage(data.user, data.message, data.timestamp)
+
+            return {code: 0, data: "Message saved successfully"}
+        }catch(e){
+            console.log("Error at ChatController.saveMessage", e)
+            return {code: -1, data: "Error saving message"}
         }
-
-        //Consultar el último ID insertado
-        data.id = parseInt(this._service.getLastInsertedID()) + 1
-
-        //Actual timestamp
-        data.timestamp = new Date().getTime()
-
-        //Save message to storage
-        this._service.saveMessageToStorage(data.id, data.user, data.message, data.timestamp)
-
-      return true
   }
 
     async getMessages() {
-        return this._service.getMessagesFromStorage()
+        try {
+            return {code: 0, data: this._service.getMessagesFromStorage()}
+        }
+        catch(e){
+            console.log("Error at ChatController.getMessages", e)
+            return {code: -1, data: "Error getting messages"}
+        }
     }
 
     async getLastMessage() {
-        return this._service.getLastMessageFromStorage()
+        try {
+            return {code: 0, data: this._service.getLastMessageFromStorage()}
+        }
+        catch (e) {
+            console.log("Error at ChatController.getLastMessage", e)
+            return { code: -1, data: "Error getting last message" }
+        }
     }
 }
