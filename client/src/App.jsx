@@ -4,9 +4,9 @@ import useWebSocket from "react-use-websocket"
 import {SendMessage} from "./components/SendMessage.jsx";
 import {MessageBoard} from "./components/MessageBoard.jsx";
 import {LoginUser} from "./components/LoginUser.jsx";
+import {ThemeToggle} from "./components/ThemeToggle.jsx";
 
 function App() {
-
     const [messages, setMessages] = useState([])
     const [user, setUser] = useState(null)
 
@@ -14,7 +14,7 @@ function App() {
         sendJsonMessage,
         lastJsonMessage,
     } = useWebSocket("ws://localhost:8080", {
-        onOpen: () => console.log('opened'),
+        onOpen: () => {},
         //Will attempt to reconnect on all close events, such as server shutting down
         shouldReconnect: () => true,
     });
@@ -88,22 +88,27 @@ function App() {
         </div>
 
   return (
-      (user === null) ?
-          <LoginUser handleLoginUser={handleLoginUser}/> :
-          <div className={"flex flex-col h-full space-y-4"}>
-              <div id={"msg-board"}
-                   className={"grow border-2 border-stone-900/20 rounded-lg p-2 space-y-2 overflow-x-hidden overflow-scroll dark:bg-gray-800 dark:text-white"}>
-                  {
-                      (messages.length === 0) ?
-                          noMessageBlock :
-                          <MessageBoard messages={messages} user={user}/>
-                  }
-              </div>
+      <>
+        <ThemeToggle/>
+          {
+              (user === null) ?
+                  <LoginUser handleLoginUser={handleLoginUser}/> :
+                  <div className={"flex flex-col h-full space-y-4"}>
+                      <div id={"msg-board"}
+                           className={"grow border-2 border-stone-900/20 rounded-lg p-2 space-y-2 overflow-x-hidden overflow-scroll bg-white dark:bg-gray-800 dark:text-white transition duration-300"}>
+                          {
+                              (messages.length === 0) ?
+                                  noMessageBlock :
+                                  <MessageBoard messages={messages} user={user}/>
+                          }
+                      </div>
 
-              <div>
-                  <SendMessage handleSendMessage={handleSendMessage} handleTypingMessage={handleTypingPartialMessage}/>
-              </div>
-          </div>
+                      <div>
+                          <SendMessage handleSendMessage={handleSendMessage} handleTypingMessage={handleTypingPartialMessage}/>
+                      </div>
+                  </div>
+          }
+      </>
   )
 }
 

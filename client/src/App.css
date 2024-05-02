@@ -5,3 +5,7 @@
 html.dark {
     color-scheme: light dark;
 }
+
+html {
+    transition: all .8s;
+}

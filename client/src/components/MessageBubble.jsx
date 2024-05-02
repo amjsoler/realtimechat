@@ -13,7 +13,7 @@ export function MessageBubble({message, myOwnMessage}) {
         return formatedDate
     }
 
-    const bubbleClasses = "flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-xl dark:bg-gray-700" + (myOwnMessage ? " rounded-tr-none" : " rounded-tl-none")
+    const bubbleClasses = "flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-xl dark:bg-gray-700 transition duration-300" + (myOwnMessage ? " rounded-tr-none" : " rounded-tl-none")
     return (
         <div key={message.id} className={
             myOwnMessage ?
