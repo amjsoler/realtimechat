@@ -12,11 +12,12 @@ const wss = new WebSocketServer({ port: port }, () => {
 
 //Incoming connection handler
 wss.on('connection', function connection(ws) {
+    console.log("New connection")
     //restore all messages on connection
     if(process.env.RESTORE_CHAT_HISTORY_ON_CONNECT){
         chatController.getMessages().then((result) => {
             if(result.code === 0){
-                ws.send(JSON.stringify(result.data))
+                ws.send(JSON.stringify({msgType: "chatHistory", data: result.data}))
             }
             else{
                 console.log(result.data)
@@ -30,13 +31,15 @@ wss.on('connection', function connection(ws) {
     //Incoming message handler
     ws.on('message', function message(data) {
         try {
+            console.log(data)
+            console.log(JSON.parse(data))
             chatController.saveMessage(JSON.parse(data)).then((result) => {
                 if(result.code === 0){
                     //Send message to all connected users
                     wss.clients.forEach(function each(client) {
                         chatController.getLastMessage().then((getLastMessageResult) => {
                             if(getLastMessageResult.code === 0){
-                                client.send(JSON.stringify(getLastMessageResult.data))
+                                client.send(JSON.stringify({msgType: "lastMessage", data: getLastMessageResult.data}))
                             }
                             else{
                                 console.log(getLastMessageResult.data)
