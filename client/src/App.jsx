@@ -31,6 +31,9 @@ function App() {
     }
 
     function handlerTypingPartialMessage(message) {
+        //If message is from the same user, return
+        if(message.user === user) return
+
         //Search in message array if message id exists
         if (messages.filter(item => item.id === message.id).length === 0) {
             //If not exists, add the message
@@ -39,7 +42,6 @@ function App() {
             //If exists, update the message
             const messageIndex = messages.findIndex(item => item.id === message.id)
 
-            console.log("Message index: ", messageIndex)
             //Update the message
             let newMessages = [...messages]
             newMessages[messageIndex] = message
@@ -63,6 +65,8 @@ function App() {
                 handlerTypingPartialMessage(lastJsonMessage.data)
                 break
         }
+
+        scrollMsgBoardToBottom()
     }, [lastJsonMessage])
 
     function scrollMsgBoardToBottom() {
@@ -70,6 +74,11 @@ function App() {
         const msgBoard = document.querySelector("#msg-board")
         msgBoard.scrollTo(0, msgBoard.scrollHeight)
     }
+
+    //Scroll to bottom when user is set
+    useEffect(() => {
+        scrollMsgBoardToBottom()
+    }, [user]);
 
     function handleLoginUser(name) {
         setUser(name)
@@ -98,7 +107,7 @@ function App() {
                     <LoginUser handleLoginUser={handleLoginUser}/> :
                     <div className={"flex flex-col h-full space-y-4"}>
                         <div id={"msg-board"}
-                             className={"grow border-2 border-stone-900/20 rounded-lg p-2 space-y-2 overflow-x-hidden overflow-scroll bg-white dark:bg-gray-800 dark:text-white transition duration-300"}>
+                             className={"grow border-2 border-stone-900/20 rounded-lg p-2 space-y-2 overflow-x-hidden overflow-scroll scroll-smooth bg-white dark:bg-gray-800 dark:text-white transition duration-300"}>
                             {
                                 (messages.length === 0) ?
                                     noMessageBlock :
