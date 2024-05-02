@@ -66,7 +66,7 @@ function App() {
                   {
                       (messages.length === 0) ?
                           noMessageBlock :
-                          <MessageBoard messages={messages}/>
+                          <MessageBoard messages={messages} user={user}/>
                   }
               </div>
 

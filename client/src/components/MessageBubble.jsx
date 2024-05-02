@@ -1,4 +1,4 @@
-export function MessageBubble({message}) {
+export function MessageBubble({message, myOwnMessage}) {
 
     function getFormattedDate(timestamp) {
         let formatedDate = "";
@@ -13,9 +13,15 @@ export function MessageBubble({message}) {
         return formatedDate
     }
     return (
-        <div key={message.id} className="flex items-start gap-2.5">
+        <div key={message.id} className={
+            myOwnMessage ?
+                "flex justify-end gap-2.5" :
+                "flex items-start gap-2.5"
+        }
+        >
             <div
-                className="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-xl dark:bg-gray-700">
+                className={
+                "flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-xl dark:bg-gray-700"}>
                 <div className="flex items-center space-x-2 rtl:space-x-reverse">
                                     <span className="text-sm font-semibold text-gray-900 dark:text-white">
                                         {message.user}
