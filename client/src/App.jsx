@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import useWebSocket from "react-use-websocket"
 import {SendMessage} from "./components/SendMessage.jsx";
 import {MessageBoard} from "./components/MessageBoard.jsx";
+import {LoginUser} from "./components/LoginUser.jsx";
 
 function App() {
 
@@ -37,11 +38,17 @@ function App() {
     }, [lastJsonMessage])
 
     function scrollMsgBoardToBottom() {
+        if(user === null) return
         const msgBoard = document.querySelector("#msg-board")
         msgBoard.scrollTo(0, msgBoard.scrollHeight)
     }
+
+    function handleLoginUser(name) {
+        setUser(name)
+    }
+
     function handleSendMessage(message) {
-        sendJsonMessage({ user: 'Jorge', msgType: 'message', message: message })
+        sendJsonMessage({ user: user, msgType: 'message', message: message })
     }
 
     const noMessageBlock =
@@ -51,19 +58,22 @@ function App() {
         </div>
 
   return (
-      <div className={"flex flex-col h-full space-y-4"}>
-        <div id={"msg-board"} className={"grow border-2 border-stone-900/20 rounded-lg p-2 space-y-2 overflow-scroll"}>
-            {
-                (messages.length === 0) ?
-                    noMessageBlock :
-                    <MessageBoard messages={messages}/>
-            }
-        </div>
+      (user === null) ?
+          <LoginUser handleLoginUser={handleLoginUser}/> :
+          <div className={"flex flex-col h-full space-y-4"}>
+              <div id={"msg-board"}
+                   className={"grow border-2 border-stone-900/20 rounded-lg p-2 space-y-2 overflow-scroll"}>
+                  {
+                      (messages.length === 0) ?
+                          noMessageBlock :
+                          <MessageBoard messages={messages}/>
+                  }
+              </div>
 
-        <div>
-            <SendMessage handleSendMessage={handleSendMessage}/>
-        </div>
-      </div>
+              <div>
+                  <SendMessage handleSendMessage={handleSendMessage}/>
+              </div>
+          </div>
   )
 }
 
