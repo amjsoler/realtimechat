@@ -23,6 +23,23 @@ function App() {
         scrollMsgBoardToBottom()
     }, [messages]);
 
+    function handlerTypingPartialMessage(message) {
+        //Search in message array if message id exists
+        if(messages.filter(item => item.id === message.id).length === 0) {
+            //If not exists, add the message
+            setMessages([...messages, message])
+        }else{
+            //If exists, update the message
+            const messageIndex = messages.findIndex(item => item.id === message.id)
+
+            console.log("Message index: ", messageIndex)
+            //Update the message
+            let newMessages = [...messages]
+            newMessages[messageIndex] = message
+
+            setMessages(newMessages)
+        }
+    }
     useEffect(() => {
         if(lastJsonMessage === null) return
 
@@ -32,7 +49,16 @@ function App() {
                 setMessages(lastJsonMessage.data)
                 break
             case "lastMessage":
+                //if the user has typing message, remove it
+                if(messages.filter(item => item.user === lastJsonMessage.data.user && item.msgType === 'typing')){
+                    const newMessages = messages.filter(item => item.user !== lastJsonMessage.data.user || item.msgType !== 'typing')
+                    setMessages(newMessages)
+                }
+
                 setMessages([...messages, lastJsonMessage.data])
+                break
+            case "typing":
+                handlerTypingPartialMessage(lastJsonMessage.data)
                 break
         }
     }, [lastJsonMessage])

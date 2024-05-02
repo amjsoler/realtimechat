@@ -17,6 +17,9 @@ export default class ChatController {
             //Save message to storage
             this._service.saveMessageToStorage(data.user, data.message, data.timestamp)
 
+            //After saving a message, i cleanup the typing messages of the user
+            this._service.cleanTypingMessagesOfUser(data.user)
+
             return {code: 0, data: "Message saved successfully"}
         }catch(e){
             console.log("Error at ChatController.saveMessage", e)
@@ -26,7 +29,17 @@ export default class ChatController {
 
   async updateTypingMessageInStorage(data) {
     try {
-        this._service.updateTypingMessageInStorage(data.user, data.message, data.timestamp, "typing")
+        //Actual timestamp
+        data.timestamp = new Date().getTime()
+
+        //If the user already has a typing message, update it
+        if(this._service.getLastTypingMessageOfUser(data.user)){
+            this._service.updateTypingMessageInStorage(data.user, data.message, data.timestamp, "typing")
+        }else{
+            //If not, create a new typing message
+            this._service.saveMessageToStorage(data.user, data.message, data.timestamp, "typing")
+        }
+
         return {code: 0, data: "Typing message updated successfully"}
     }
     catch(e){

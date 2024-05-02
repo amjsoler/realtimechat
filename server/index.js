@@ -1,5 +1,6 @@
 import { WebSocketServer } from 'ws';
 import  ChatController  from './controllers/ChatController.js';
+import {chatRepository} from "./repositories/ChatRepository.js";
 
 const port = process.env.WS_SERVER_PORT ?? 8080
 
@@ -11,8 +12,6 @@ const wss = new WebSocketServer({ port: port }, () => {
 })
 
 function saveMessageHandler(data) {
-    console.log("Savemessage handler")
-
     chatController.saveMessage(JSON.parse(data)).then((result) => {
         if(result.code === 0){
             //Send message to all connected users
@@ -34,6 +33,8 @@ function saveMessageHandler(data) {
 
 function saveTypingHandler(data) {
     chatController.updateTypingMessageInStorage(JSON.parse(data)).then((result) => {
+        console.log(chatRepository)
+        console.log("====================================")
         if(result.code === 0){
             //Send message to all connected users
             wss.clients.forEach(function each(client) {
@@ -79,6 +80,7 @@ wss.on('connection', function connection(ws) {
                 saveMessageHandler(data)
             else if(jsonData.msgType === "typing")
                 saveTypingHandler(data)
+
         }catch(e){
             console.log("Error parsing JSON data")
         }
