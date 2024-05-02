@@ -26,7 +26,6 @@ function App() {
     }, [messages]);
 
     function removeTypingMessagesFromUserAndReturnMessages(user) {
-        console.log(messages.filter(item => item.user !== user || item.msgType !== 'typing'))
         return messages.filter(item => item.user !== user || item.msgType !== 'typing')
     }
 

@@ -8,7 +8,7 @@ export default class ChatController {
             //Validate incoming data
             if (!data || !data.msgType || !data.message || !data.user) {
                 console.log("Invalid data")
-                return false
+                return {code: -2, data: "Invalid data"}
             }
 
             //Actual timestamp

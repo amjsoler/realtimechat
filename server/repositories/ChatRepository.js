@@ -27,6 +27,7 @@ export function updateTypingMessageInStorage(user, message, timestamp, msgType="
 export function cleanTypingMessagesOfUser(user) {
     chatRepository = chatRepository.filter(item => item.user !== user || item.msgType !== "typing")
 }
+
 export function getLastTypingMessageOfUser(user) {
     if(chatRepository.filter(item => item.user === user && item.msgType === "typing").length === 0){
         return null
