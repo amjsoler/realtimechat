@@ -25,6 +25,10 @@ function App() {
         scrollMsgBoardToBottom()
     }, [messages]);
 
+    function removeTypingMessagesFromUserAndReturnMessages(user) {
+        console.log(messages.filter(item => item.user !== user || item.msgType !== 'typing'))
+        return messages.filter(item => item.user !== user || item.msgType !== 'typing')
+    }
 
     function handlerTypingPartialMessage(message) {
         //Search in message array if message id exists
@@ -53,13 +57,7 @@ function App() {
                 setMessages(lastJsonMessage.data)
                 break
             case "lastMessage":
-                //if the user has typing message, remove it
-                if (messages.filter(item => item.user === lastJsonMessage.data.user && item.msgType === 'typing')) {
-                    const newMessages = messages.filter(item => item.user !== lastJsonMessage.data.user || item.msgType !== 'typing')
-                    setMessages(newMessages)
-                }
-
-                setMessages([...messages, lastJsonMessage.data])
+                setMessages([...removeTypingMessagesFromUserAndReturnMessages(lastJsonMessage.data.user), lastJsonMessage.data])
                 break
             case "typing":
                 handlerTypingPartialMessage(lastJsonMessage.data)
