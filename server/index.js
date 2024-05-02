@@ -10,9 +10,50 @@ const wss = new WebSocketServer({ port: port }, () => {
     console.log(`WebSocket server started on localhost:${port}`)
 })
 
+function saveMessageHandler(data) {
+    console.log("Savemessage handler")
+
+    chatController.saveMessage(JSON.parse(data)).then((result) => {
+        if(result.code === 0){
+            //Send message to all connected users
+            wss.clients.forEach(function each(client) {
+                chatController.getLastMessage().then((getLastMessageResult) => {
+                    if(getLastMessageResult.code === 0){
+                        client.send(JSON.stringify({msgType: "lastMessage", data: getLastMessageResult.data}))
+                    }
+                    else{
+                        console.log(getLastMessageResult.data)
+                    }
+                })
+            });
+        }else{
+            console.log(result.data)
+        }
+    })
+}
+
+function saveTypingHandler(data) {
+    chatController.updateTypingMessageInStorage(JSON.parse(data)).then((result) => {
+        if(result.code === 0){
+            //Send message to all connected users
+            wss.clients.forEach(function each(client) {
+                chatController.getLastTypingMessageOfUser(JSON.parse(data).user).then((getLastMessageResult) => {
+                    if(getLastMessageResult.code === 0){
+                        client.send(JSON.stringify({msgType: "typing", data: getLastMessageResult.data}))
+                    }
+                    else{
+                        console.log(getLastMessageResult.data)
+                    }
+                })
+            });
+        }else{
+            console.log(result.data)
+        }
+    })
+}
+
 //Incoming connection handler
 wss.on('connection', function connection(ws) {
-    console.log("New connection")
     //restore all messages on connection
     if(process.env.RESTORE_CHAT_HISTORY_ON_CONNECT){
         chatController.getMessages().then((result) => {
@@ -31,25 +72,13 @@ wss.on('connection', function connection(ws) {
     //Incoming message handler
     ws.on('message', function message(data) {
         try {
-            console.log(data)
-            console.log(JSON.parse(data))
-            chatController.saveMessage(JSON.parse(data)).then((result) => {
-                if(result.code === 0){
-                    //Send message to all connected users
-                    wss.clients.forEach(function each(client) {
-                        chatController.getLastMessage().then((getLastMessageResult) => {
-                            if(getLastMessageResult.code === 0){
-                                client.send(JSON.stringify({msgType: "lastMessage", data: getLastMessageResult.data}))
-                            }
-                            else{
-                                console.log(getLastMessageResult.data)
-                            }
-                        })
-                    });
-                }else{
-                    console.log(result.data)
-                }
-            })
+            const jsonData = JSON.parse(data)
+
+            //Check the type of the message (message, typing)
+            if(jsonData.msgType === "message")
+                saveMessageHandler(data)
+            else if(jsonData.msgType === "typing")
+                saveTypingHandler(data)
         }catch(e){
             console.log("Error parsing JSON data")
         }

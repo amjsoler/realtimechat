@@ -24,6 +24,27 @@ export default class ChatController {
         }
   }
 
+  async updateTypingMessageInStorage(data) {
+    try {
+        this._service.updateTypingMessageInStorage(data.user, data.message, data.timestamp, "typing")
+        return {code: 0, data: "Typing message updated successfully"}
+    }
+    catch(e){
+        console.log("Error at ChatController.updateTypingMessageInStorage", e)
+        return {code: -1, data: "Error updating typing message"}
+    }
+  }
+
+  async getLastTypingMessageOfUser(user) {
+    try {
+        return {code: 0, data: this._service.getLastTypingMessageOfUser(user)}
+    }
+    catch(e){
+        console.log("Error at ChatController.getLastTypingMessageOfUser", e)
+        return {code: -1, data: "Error getting last typing message"}
+    }
+  }
+
     async getMessages() {
         try {
             return {code: 0, data: this._service.getMessagesFromStorage()}

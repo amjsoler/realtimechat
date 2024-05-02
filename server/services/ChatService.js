@@ -2,7 +2,9 @@ import {
     getLastInsertedID,
     getLastMessageFromStorage,
     getMessagesFromStorage,
-    saveMessageToStorage
+    saveMessageToStorage,
+    updateTypingMessageInStorage,
+    getLastTypingMessageOfUser
 } from "../repositories/ChatRepository.js";
 
 export default class ChatService {
@@ -20,5 +22,13 @@ export default class ChatService {
 
     getLastMessageFromStorage() {
         return getLastMessageFromStorage()
+    }
+
+    getLastTypingMessageOfUser(user) {
+        return getLastTypingMessageOfUser(user)
+    }
+
+    updateTypingMessageInStorage(user, message, timestamp) {
+        updateTypingMessageInStorage(user, message, timestamp, "typing")
     }
 }

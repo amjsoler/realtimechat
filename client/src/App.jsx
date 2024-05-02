@@ -51,6 +51,10 @@ function App() {
         sendJsonMessage({ user: user, msgType: 'message', message: message })
     }
 
+    function handleTypingPartialMessage(message) {
+        sendJsonMessage({ user: user, msgType: 'typing', message: message})
+    }
+
     const noMessageBlock =
         <div className={"w-full pt-12"}>
             <p className={"text-center font-semibold text-2xl"}>Still no messages</p>
@@ -71,7 +75,7 @@ function App() {
               </div>
 
               <div>
-                  <SendMessage handleSendMessage={handleSendMessage}/>
+                  <SendMessage handleSendMessage={handleSendMessage} handleTypingMessage={handleTypingPartialMessage}/>
               </div>
           </div>
   )
