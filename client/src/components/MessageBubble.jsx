@@ -1,4 +1,17 @@
 export function MessageBubble({message}) {
+
+    function getFormattedDate(timestamp) {
+        let formatedDate = "";
+
+        const date = new Date(timestamp);
+        formatedDate += date.getFullYear().toString() + "/"
+        formatedDate += date.getMonth() + "/"
+        formatedDate += date.getDate() + " "
+        formatedDate += date.getHours() + ":"
+        formatedDate += date.getMinutes()
+
+        return formatedDate
+    }
     return (
         <div key={message.id} className="flex items-start gap-2.5">
             <div
@@ -7,7 +20,7 @@ export function MessageBubble({message}) {
                                     <span className="text-sm font-semibold text-gray-900 dark:text-white">
                                         {message.user}
                                     </span>
-                    <span className="text-sm font-normal text-gray-500 dark:text-gray-400">11:46</span>
+                    <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{getFormattedDate(message.timestamp)}</span>
                 </div>
                 <p className="text-sm font-normal py-2.5 text-gray-900 dark:text-white">
                     {message.message}
