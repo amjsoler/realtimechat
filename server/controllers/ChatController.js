@@ -3,7 +3,7 @@ import ChatService from "../services/ChatService.js";
 export default class ChatController {
     _service = new ChatService();
 
-  async saveMessage(data) {
+  saveMessage(data) {
         try{
             //Validate incoming data
             if (!data || !data.msgType || !data.message || !data.user) {
@@ -15,32 +15,34 @@ export default class ChatController {
             data.timestamp = new Date().getTime()
 
             //Save message to storage
-            this._service.saveMessageToStorage(data.user, data.message, data.timestamp)
+            const theCreatedMessage = this._service.saveMessageToStorage(data.user, data.message, data.timestamp)
 
             //After saving a message, i cleanup the typing messages of the user
             this._service.cleanTypingMessagesOfUser(data.user)
 
-            return {code: 0, data: "Message saved successfully"}
+            return {code: 0, data: theCreatedMessage}
         }catch(e){
             console.log("Error at ChatController.saveMessage", e)
             return {code: -1, data: "Error saving message"}
         }
   }
 
-  async updateTypingMessageInStorage(data) {
+  updateTypingMessageInStorage(data) {
     try {
+        let affectedMessage = null
+
         //Actual timestamp
         data.timestamp = new Date().getTime()
 
         //If the user already has a typing message, update it
         if(this._service.getLastTypingMessageOfUser(data.user)){
-            this._service.updateTypingMessageInStorage(data.user, data.message, data.timestamp, "typing")
+            affectedMessage = this._service.updateTypingMessageInStorage(data.user, data.message, data.timestamp, "typing")
         }else{
             //If not, create a new typing message
-            this._service.saveMessageToStorage(data.user, data.message, data.timestamp, "typing")
+            affectedMessage = this._service.saveMessageToStorage(data.user, data.message, data.timestamp, "typing")
         }
 
-        return {code: 0, data: "Typing message updated successfully"}
+        return {code: 0, data: affectedMessage}
     }
     catch(e){
         console.log("Error at ChatController.updateTypingMessageInStorage", e)
@@ -48,7 +50,7 @@ export default class ChatController {
     }
   }
 
-  async getLastTypingMessageOfUser(user) {
+  getLastTypingMessageOfUser(user) {
     try {
         return {code: 0, data: this._service.getLastTypingMessageOfUser(user)}
     }
@@ -58,7 +60,7 @@ export default class ChatController {
     }
   }
 
-    async getMessages() {
+    getMessages() {
         try {
             return {code: 0, data: this._service.getMessagesFromStorage()}
         }
@@ -68,7 +70,7 @@ export default class ChatController {
         }
     }
 
-    async getLastMessage() {
+    getLastMessage() {
         try {
             return {code: 0, data: this._service.getLastMessageFromStorage()}
         }

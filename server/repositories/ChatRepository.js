@@ -1,26 +1,40 @@
 export let chatRepository = []
 
 export function saveMessageToStorage(user, message, timestamp, msgType="message") {
-    chatRepository.push({
+    const MessageToInsert = {
         id: getLastInsertedID()+1,
         user: user,
         message: message,
         msgType: msgType,
         timestamp: timestamp
-    })
+    }
+
+    chatRepository.push(MessageToInsert)
+
+    return MessageToInsert
 }
 
 export function updateTypingMessageInStorage(user, message, timestamp, msgType="typing") {
-    const indexTypingMessage = chatRepository.indexOf(chatRepository.filter(item => item.user === user && item.msgType === "typing")[0])
+    if(chatRepository.filter(item => item.user === user && item.msgType === "typing").length === 0) {
+        return null
+    }else{
+        const indexTypingMessage = chatRepository.indexOf(chatRepository.filter(item => item.user === user && item.msgType === "typing")[0])
 
-    if(indexTypingMessage !== -1) {
-        chatRepository[indexTypingMessage] = {
-            id: chatRepository[indexTypingMessage].id,
-            user: user,
-            message: message,
-            msgType: msgType,
-            timestamp: timestamp
+        if(indexTypingMessage !== -1) {
+            chatRepository[indexTypingMessage] = {
+                id: chatRepository[indexTypingMessage].id,
+                user: user,
+                message: message,
+                msgType: msgType,
+                timestamp: timestamp
+            }
+
+            return chatRepository[indexTypingMessage]
         }
+        else{
+            return null
+        }
+
     }
 }
 

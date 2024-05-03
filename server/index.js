@@ -42,50 +42,36 @@ wss.on('connection', function connection(ws) {
 })
 
 function saveMessageHandler(data) {
-    let lastMessage = null
+    try {
+        const saveMessageResult = chatController.saveMessage(JSON.parse(data));
 
-    chatController.saveMessage(JSON.parse(data)).then((result) => {
-
-        if(result.code === 0){
-            chatController.getLastMessage().then((result) => {
-                if(result.code === 0){
-                    lastMessage = result.data
-
-                    //Send message to all connected users
-                    wss.clients.forEach(function each(client) {
-                        client.send(JSON.stringify({msgType: "lastMessage", data: lastMessage}))
-                    });
-                }
-                else{
-                    console.log(result.data)
-                }
-            })
+        if(saveMessageResult.code === 0){
+            //Send message to all connected users
+            wss.clients.forEach(function each(client) {
+                client.send(JSON.stringify({msgType: "lastMessage", data: saveMessageResult.data}))
+            });
         }else{
-            console.log(result.data)
+            console.log(saveMessageResult.data)
         }
-    })
+    }catch(e) {
+        console.log("Error at saveMessageHandler", e)
+
+    }
 }
 
 function saveTypingHandler(data) {
-    chatController.updateTypingMessageInStorage(JSON.parse(data)).then((result) => {
-        if(result.code === 0){
-            let lastTypingMessage = null
+    try{
+        const updateMessageResult = chatController.updateTypingMessageInStorage(JSON.parse(data));
 
-            chatController.getLastTypingMessageOfUser(JSON.parse(data).user).then((getLastMessageResult) => {
-                if(getLastMessageResult.code === 0){
-                    lastTypingMessage = getLastMessageResult.data
-
-                    //Send message to all connected users
-                    wss.clients.forEach(function each(client) {
-                        client.send(JSON.stringify({msgType: "typing", data: getLastMessageResult.data}))
-                    });
-                }
-                else{
-                    console.log(getLastMessageResult.data)
-                }
-            })
+        if(updateMessageResult.code === 0){
+            //Send message to all connected users
+            wss.clients.forEach(function each(client) {
+                client.send(JSON.stringify({msgType: "typing", data: updateMessageResult.data}))
+            });
         }else{
-            console.log(result.data)
+            console.log(updateMessageResult.data)
         }
-    })
+    }catch(e){
+        console.log("Error at saveTypingHandler", e)
+    }
 }

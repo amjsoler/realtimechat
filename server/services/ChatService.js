@@ -10,7 +10,7 @@ import {
 
 export default class ChatService {
     saveMessageToStorage(user, message, timestamp, msgType) {
-        saveMessageToStorage(user, message, timestamp, msgType)
+        return saveMessageToStorage(user, message, timestamp, msgType)
     }
 
     getLastInsertedID() {
@@ -30,7 +30,7 @@ export default class ChatService {
     }
 
     updateTypingMessageInStorage(user, message, timestamp) {
-        updateTypingMessageInStorage(user, message, timestamp, "typing")
+        return updateTypingMessageInStorage(user, message, timestamp, "typing")
     }
 
     cleanTypingMessagesOfUser(user) {
