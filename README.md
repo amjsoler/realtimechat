@@ -6,8 +6,7 @@ Se ha implementado un chat en tiempo real mediante websockets. Una de las funcio
 
 1. Navega al directorio **server**
 2. Ejecutar ```npm install```
-3. Pon el servidor en funcionamiento ```npm run dev```
-  3.1. Si quieres ejecutar el servidor en un puerto diferente, modifica el archivo .env 
+3. Pon el servidor en funcionamiento ```npm run dev``` ***Si quieres ejecutar el servidor en un puerto diferente, modifica el archivo .env***
 4. Abre una ventana nueva en el terminal y esta vez navega a la carpeta **cliente**
 5. Ejecuta ```npm install ```
 6. Ejecuta ```npm run dev```
