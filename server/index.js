@@ -13,15 +13,16 @@ const wss = new WebSocketServer({ port: port }, () => {
 //Incoming connection handler
 wss.on('connection', function connection(ws) {
     //restore all messages on connection
-    if(process.env.RESTORE_CHAT_HISTORY_ON_CONNECT == true){
-        chatController.getMessages().then((result) => {
-            if(result.code === 0){
-                ws.send(JSON.stringify({msgType: "chatHistory", data: result.data}))
-            }
-            else{
-                console.log(result.data)
-            }
-        })
+    if(process.env.RESTORE_CHAT_HISTORY_ON_CONNECT === "true"){
+        console.log(process.env.RESTORE_CHAT_HISTORY_ON_CONNECT)
+        const getMessagesResult = chatController.getMessages()
+
+        if(getMessagesResult.code === 0){
+            ws.send(JSON.stringify({msgType: "chatHistory", data: getMessagesResult.data}))
+        }
+        else{
+            console.log(getMessagesResult.data)
+        }
     }
 
     //Incoming message handler
