@@ -14,7 +14,6 @@ const wss = new WebSocketServer({ port: port }, () => {
 wss.on('connection', function connection(ws) {
     //restore all messages on connection
     if(process.env.RESTORE_CHAT_HISTORY_ON_CONNECT === "true"){
-        console.log(process.env.RESTORE_CHAT_HISTORY_ON_CONNECT)
         const getMessagesResult = chatController.getMessages()
 
         if(getMessagesResult.code === 0){
